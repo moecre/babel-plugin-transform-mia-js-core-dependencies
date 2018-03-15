@@ -32,6 +32,7 @@ module.exports = babel => {
             CallExpression: (path, state) => {
                 const {node} = path;
                 const {callee} = node;
+                const arguments = node.arguments;
 
                 if (_.isUndefined(callee.object) || _.isUndefined(callee.property)) {
                     return;
@@ -55,8 +56,11 @@ module.exports = babel => {
                 if (callee.object.name !== 'Shared' || whitelistedSharedMembers.indexOf(callee.property.name) === -1) {
                     return;
                 }
+                if (arguments.length <= 0) {
+                    return;
+                }
 
-                const absoluteFullPath = _getAbsoluteFullPath(callee.property.name, node.arguments[0].value);
+                const absoluteFullPath = _getAbsoluteFullPath(callee.property.name, arguments);
 
                 if (!absoluteFullPath) {
                     return;
