@@ -6,7 +6,6 @@
   "repository": "github:moecre/babel-plugin-transform-mia-js-core-dependencies",
   "dependencies": {
     "babel-core": "^6.26.0",
-    "lodash": "^4.17.5",
-    "mia-js-core": "^1.0.8"
+    "lodash": "^4.17.5"
   }
 }
