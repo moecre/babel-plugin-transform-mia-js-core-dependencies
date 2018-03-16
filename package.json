@@ -1,7 +1,7 @@
 {
   "name": "babel-plugin-transform-mia-js-core-dependencies",
-  "description": "A Babel plugin to transform mia-js-core dependencies to CommonJS",
-  "version": "1.1.1",
+  "description": "A Babel plugin to transform mia-js-core dependencies to CommonJS.",
+  "version": "1.2.1",
   "license": "MIT",
   "repository": "github:moecre/babel-plugin-transform-mia-js-core-dependencies",
   "dependencies": {

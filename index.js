@@ -32,7 +32,6 @@ module.exports = babel => {
             CallExpression: (path, state) => {
                 const {node} = path;
                 const {callee} = node;
-                const arguments = node.arguments;
 
                 if (_.isUndefined(callee.object) || _.isUndefined(callee.property)) {
                     return;
@@ -56,23 +55,36 @@ module.exports = babel => {
                 if (callee.object.name !== 'Shared' || whitelistedSharedMembers.indexOf(callee.property.name) === -1) {
                     return;
                 }
-                if (arguments.length <= 0) {
+                if (node.arguments.length <= 0 || _.isUndefined(node.arguments[0].value)) {
                     return;
                 }
 
-                const absoluteFullPath = _getAbsoluteFullPath(callee.property.name, arguments);
+                const identity = node.arguments[0].value;
+                const identityPath = identity.split('.');
+                const absoluteFullPath = _getAbsoluteFullPath(callee.property.name, identityPath[0]);
 
                 if (!absoluteFullPath) {
                     return;
                 }
 
-                // Do the actual replace
-                path.replaceWith(
-                    t.callExpression(
-                        t.identifier('require'),
-                        [t.stringLiteral(absoluteFullPath)]
-                    )
+                identityPath.shift();
+
+                let expression = t.callExpression(
+                    t.identifier('require'),
+                    [t.stringLiteral(absoluteFullPath)]
                 );
+
+                // For identifiers like 'SomeConfig.parent.child' we must wrap the CallExpression into MemberExpressions
+                while (identityPath.length) {
+                    const member = identityPath.shift();
+                    expression = t.memberExpression(
+                        expression,
+                        t.identifier(member)
+                    );
+                }
+
+                // Do the actual replace
+                path.replaceWith(expression);
             }
         }
     };
